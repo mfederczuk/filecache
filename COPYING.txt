@@ -1,0 +1,8 @@
+All Markdown files, which are files whose names end with '.md', are licensed under:
+
+        Creative Commons Attribution Share Alike 4.0 International (licenses/CC-BY-SA-4.0.txt)
+
+All other files that do not match any of the before laid out rules, except the license files, which are all files
+located in the 'licenses' directory, are licensed under:
+
+        Apache License v2.0 (licenses/Apache-v2.0.txt)
