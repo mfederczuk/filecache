@@ -1,0 +1,138 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
+plugins {
+	id 'com.android.library'
+	id 'kotlin-android'
+	id 'kotlin-kapt'
+	id 'org.jetbrains.dokka' version '1.5.30'
+	id 'maven-publish'
+}
+
+android {
+	compileSdk 30
+
+	defaultConfig {
+		minSdk 14
+		targetSdk 30
+
+		multiDexEnabled true
+
+		testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+		consumerProguardFiles 'consumer-rules.pro'
+	}
+
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+		}
+	}
+
+	compileOptions {
+		coreLibraryDesugaringEnabled true
+
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	kotlinOptions {
+		jvmTarget = JavaVersion.VERSION_1_8.toString()
+		freeCompilerArgs = ['-Xexplicit-api=strict']
+	}
+
+	sourceSets {
+		def sharedTestSrcDir = 'src/sharedTest/java'
+		test {
+			java.srcDirs += sharedTestSrcDir
+			kotlin.srcDirs += sharedTestSrcDir
+		}
+		androidTest {
+			java.srcDirs += sharedTestSrcDir
+			kotlin.srcDirs += sharedTestSrcDir
+		}
+	}
+}
+
+tasks.withType(DokkaTask.class).configureEach {task ->
+	task.moduleName = rootProject.name
+	task.dokkaSourceSets.forEach { sourceSet ->
+		sourceSet.reportUndocumented.set true
+	}
+}
+
+task generateSourcesJar(type: Jar) {
+	archiveClassifier.set 'sources'
+	from android.sourceSets.main.java.srcDirs
+}
+
+task generateJavadocsJar(type: Jar, dependsOn: dokkaJavadoc) {
+	archiveClassifier.set 'javadoc'
+	from dokkaJavadoc.outputDirectory
+}
+
+dependencies {
+	coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$versions.desugar_jdk_libs"
+
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+
+	implementation("androidx.core:core-ktx:$versions.androidx_core") {
+		// only 'androidx.annotation:annotation', 'androidx.core:core' and 'androidx.core:core-ktx' are required
+		exclude group: 'androidx.lifecycle'
+		exclude group: 'androidx.collection'
+		exclude group: 'androidx.versionedparcelable'
+		exclude module: 'annotation-experimental'
+	}
+
+	androidTestImplementation "com.google.dagger:dagger:$versions.dagger"
+	kaptAndroidTest "com.google.dagger:dagger-compiler:$versions.dagger"
+
+	testImplementation "junit:junit:$versions.junit"
+	androidTestImplementation "junit:junit:$versions.junit"
+	androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
+	androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			release(MavenPublication) {
+				from components.release
+
+				artifact generateSourcesJar
+				artifact generateJavadocsJar
+
+				groupId = project.group
+				artifactId = project.name
+				version = project.version
+				pom {
+					name = 'FileCache'
+					description = 'Android library to cache arbitrary data on the filesystem'
+					url = 'https://github.com/mfederczuk/filecache'
+					inceptionYear = '2021'
+					licenses {
+						license {
+							name = 'The Apache License, Version 2.0'
+							url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+							distribution = 'repo'
+						}
+					}
+					developers {
+						developer {
+							id = 'mfederczuk'
+							name = 'Michael Federczuk'
+							email = 'federczuk.michael@protonmail.com'
+							url = 'https://github.com/mfederczuk'
+							timezone = 'Europe/Vienna'
+						}
+					}
+					scm {
+						connection = 'scm:git:https://github.com/mfederczuk/filecache.git'
+						developerConnection = 'scm:git:ssh://git@github.com/mfederczuk/filecache.git'
+						tag = 'HEAD'
+						url = 'https://github.com/mfederczuk/filecache'
+					}
+				}
+			}
+		}
+	}
+}

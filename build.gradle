@@ -1,0 +1,48 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+	ext.versions = new Expando(
+		[
+			desugar_jdk_libs: '1.1.5',
+
+			kotlin: '1.5.31',
+
+			androidx_core: '1.6.0',
+
+			dagger: '2.38.1',
+
+			junit: '4.13.2',
+			androidx_junit: '1.1.3',
+			espresso: '3.4.0',
+		]
+	)
+
+	repositories {
+		google()
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'com.android.tools.build:gradle:7.1.0-alpha13'
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+
+		// NOTE: Do not place your application dependencies here; they belong
+		// in the individual module build.gradle files
+	}
+}
+
+group = 'io.github.mfederczuk'
+version = '0.1.0-indev01'
+
+subprojects { subproject ->
+	subproject.group = rootProject.group
+	subproject.version = rootProject.version
+
+	subproject.repositories {
+		google()
+		mavenCentral()
+	}
+}
+
+task clean(type: Delete) {
+	delete rootProject.buildDir
+}

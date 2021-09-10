@@ -1,0 +1,5 @@
+rootProject.name = 'FileCache'
+
+include(
+	':filecache',
+)
