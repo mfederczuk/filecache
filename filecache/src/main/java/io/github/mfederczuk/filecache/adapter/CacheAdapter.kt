@@ -36,6 +36,8 @@ import java.io.IOException
  *
  * @since TODO TBD
  *
+ * @sample GenericListCacheAdapter
+ *
  * @constructor Empty constructor.
  */
 public abstract class CacheAdapter<T : Any> {
