@@ -30,8 +30,7 @@ import java.time.Instant
  *
  * @param value The stored value of the cache.
  *
- * @param modificationTime The point in time when [value] was written to the cache.\
- * Defaults to [Instant.now].
+ * @param modificationTime The point in time when [value] was written to the cache.
  */
 public data class CacheSnapshot<T : Any>(
 	/**
@@ -46,7 +45,7 @@ public data class CacheSnapshot<T : Any>(
 	 *
 	 * @since TODO TBD
 	 */
-	val modificationTime: Instant = Instant.now(),
+	val modificationTime: Instant,
 ) {
 
 	/**
