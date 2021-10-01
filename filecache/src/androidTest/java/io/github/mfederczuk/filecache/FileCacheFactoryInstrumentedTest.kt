@@ -27,7 +27,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 
 	@Test
 	public fun onlyBaseDir() {
-		with(FileCacheFactory(baseDir = File("/"))) {
+		test(FileCacheFactory(baseDir = File("/"))) {
 			create("yeehaw", UserCacheAdapter)
 				.assert(File("/yeehaw"))
 
@@ -38,7 +38,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(File("/a/b/c"))
 		}
 
-		with(FileCacheFactory(baseDir = File("/abc/xyz"))) {
+		test(FileCacheFactory(baseDir = File("/abc/xyz"))) {
 			create("baz", UserCacheAdapter)
 				.assert(File("/abc/xyz/baz"))
 
@@ -49,7 +49,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(File("/123/456"))
 		}
 
-		with(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir)) {
+		test(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir)) {
 			create("cache", UserCacheAdapter)
 				.assert(instrumentationTargetContext.cacheDir.resolve("cache"))
 
@@ -63,7 +63,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 
 	@Test
 	public fun filenamePrefix() {
-		with(FileCacheFactory(baseDir = File("/"), filenamePrefix = "foo")) {
+		test(FileCacheFactory(baseDir = File("/"), filenamePrefix = "foo")) {
 			create("bar", UserCacheAdapter)
 				.assert(File("/foobar"))
 
@@ -74,7 +74,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(File("/foobar"))
 		}
 
-		with(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir, filenamePrefix = "cache_")) {
+		test(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir, filenamePrefix = "cache_")) {
 			create("_foobar", UserCacheAdapter)
 				.assert(instrumentationTargetContext.cacheDir.resolve("cache_foobar"))
 
@@ -88,7 +88,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 
 	@Test
 	public fun filenameSuffix() {
-		with(FileCacheFactory(baseDir = File("/"), filenameSuffix = "bar")) {
+		test(FileCacheFactory(baseDir = File("/"), filenameSuffix = "bar")) {
 			create("foo", UserCacheAdapter)
 				.assert(File("/foobar"))
 
@@ -99,7 +99,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(File("/foobar"))
 		}
 
-		with(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir, filenameSuffix = ".cache.bin")) {
+		test(FileCacheFactory(baseDir = instrumentationTargetContext.cacheDir, filenameSuffix = ".cache.bin")) {
 			create("foobar.cache", UserCacheAdapter)
 				.assert(instrumentationTargetContext.cacheDir.resolve("foobar.cache.bin"))
 
@@ -113,7 +113,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 
 	@Test
 	public fun filenamePrefixAndFilenameSuffix() {
-		with(
+		test(
 			FileCacheFactory(
 				baseDir = File("/"),
 				filenamePrefix = "foo",
@@ -130,7 +130,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(File("/foobarbaz"))
 		}
 
-		with(
+		test(
 			FileCacheFactory(
 				baseDir = instrumentationTargetContext.cacheDir,
 				filenamePrefix = "cache_",
@@ -153,7 +153,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 		val duration20Seconds = Duration.ofSeconds(20)
 		val duration1Hour = Duration.ofHours(1)
 
-		with(FileCacheFactory(baseDir = File("/"))) {
+		test(FileCacheFactory(baseDir = File("/"))) {
 			create("foo", UserCacheAdapter)
 				.assert(Duration.ZERO)
 
@@ -164,7 +164,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(duration1Hour)
 		}
 
-		with(FileCacheFactory(baseDir = File("/"), defaultMaxAge = duration20Seconds)) {
+		test(FileCacheFactory(baseDir = File("/"), defaultMaxAge = duration20Seconds)) {
 			create("foo", UserCacheAdapter)
 				.assert(duration20Seconds)
 
@@ -175,7 +175,7 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 				.assert(duration1Hour)
 		}
 
-		with(FileCacheFactory(baseDir = File("/"), defaultMaxAge = duration1Hour)) {
+		test(FileCacheFactory(baseDir = File("/"), defaultMaxAge = duration1Hour)) {
 			create("foo", UserCacheAdapter)
 				.assert(duration1Hour)
 
@@ -185,5 +185,15 @@ public class FileCacheFactoryInstrumentedTest : BaseInstrumentedTest() {
 			create("foo", UserCacheAdapter, duration1Hour)
 				.assert(duration1Hour)
 		}
+	}
+
+
+	private fun test(factory: FileCacheFactory, assertBlock: FileCacheFactory.() -> Unit) {
+		factory.run(assertBlock)
+
+		factory
+			.newBuilder()
+			.build()
+			.run(assertBlock)
 	}
 }
