@@ -1,0 +1,25 @@
+buildscript {
+	def dependencyVersions = new Properties()
+	try(def stream = new FileInputStream(new File(project.rootDir.parent, "dependency_versions.properties"))) {
+		dependencyVersions.load(stream)
+	}
+
+	ext.kotlin_version = dependencyVersions.getProperty("kotlin")
+}
+
+plugins {
+	id 'org.gradle.kotlin.kotlin-dsl' version '2.1.6'
+}
+
+repositories {
+	google()
+	mavenCentral()
+	maven { url "https://plugins.gradle.org/m2/" }
+}
+
+dependencies {
+	implementation 'com.android.tools.build:gradle:7.1.0-alpha13'
+	implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	implementation gradleApi()
+	implementation 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.30'
+}
