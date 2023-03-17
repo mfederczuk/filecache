@@ -2,4 +2,7 @@ rootProject.name = 'FileCache'
 
 include(
 	':filecache',
+	':filecache-rxjava3',
+	':filecache-moshi',
+	':app',
 )

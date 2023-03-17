@@ -1,0 +1,22 @@
+plugins {
+	id 'com.android.library'
+	id 'BuildPlugin'
+	id 'kotlin-kapt'
+}
+
+dependencies {
+	implementation project(':filecache')
+
+	implementation("androidx.core:core-ktx:$versions.androidx_core") {
+		// only 'androidx.annotation:annotation', 'androidx.core:core' and 'androidx.core:core-ktx' are required
+		exclude group: 'androidx.lifecycle'
+		exclude group: 'androidx.collection'
+		exclude group: 'androidx.versionedparcelable'
+		exclude module: 'annotation-experimental'
+	}
+
+	implementation "com.squareup.moshi:moshi:$versions.moshi"
+	kaptTest "com.squareup.moshi:moshi-kotlin-codegen:$versions.moshi"
+
+	testImplementation "junit:junit:$versions.junit"
+}

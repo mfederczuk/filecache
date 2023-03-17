@@ -1,0 +1,18 @@
+plugins {
+	id 'com.android.library'
+	id 'BuildPlugin'
+}
+
+buildPlugin {
+	enableCoreLibraryDesugaring()
+}
+
+dependencies {
+	implementation project(':filecache')
+
+	implementation "io.reactivex.rxjava3:rxjava:$versions.rxjava"
+
+	androidTestImplementation "junit:junit:$versions.junit"
+	androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
+	androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+}
